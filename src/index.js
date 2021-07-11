@@ -101,4 +101,59 @@ app.post("/withdraw",isThereASccount,(request,response)=>{
     return response.status(201).send()
 });
 
+app.get("/statement/date",isThereASccount,(request,response)=>{
+
+    const { customer } = request;
+    const { date } = request.query;
+
+    const dateFormat = new Date(date + " 00:00")
+
+    const statement = customer.statement.filter((statement)=>
+
+         statement.created_at.toDateString() === new Date(dateFormat).toDateString()
+    )
+    return response.json(statement)
+
+
+});
+
+app.put("/account",isThereASccount,(request,response)=>{
+
+    const name = request.body.name;
+    const customer = request.customer;
+
+    customer.name = name;
+
+    response.status(201).json({"message":"New name is "+name})
+});
+
+app.get("/account",isThereASccount,(request,response)=>{
+
+    const { customer } = request;
+    return response.json(customer)
+});
+
+app.delete("/account", isThereASccount, (request,response)=>{
+
+    const customer = request.customer;
+
+    customers.splice(customer,1);
+
+    response.status(200).json(customers)
+});
+
+
+app.get("/accounts", (request,response)=>{
+
+    response.status(200).json(customers)
+});
+
+app.get("/balance",isThereASccount,(request,response)=>{
+
+    const { customer } = request;
+
+    const balance = getBalance(customer.statement);
+    return response.json(balance)
+
+})
 app.listen(3333)
